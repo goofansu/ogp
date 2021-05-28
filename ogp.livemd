@@ -1,0 +1,63 @@
+# ogp
+
+## Usage
+
+Notice: Structured properties like `og:image:url` is not supported.
+
+### Parse from HTML
+
+#### Parse basic metadata
+
+[https://ogp.me/#metadata](https://ogp.me/#metadata)
+
+```elixir
+# Basic Metadata
+
+basic_metadata = """
+<meta property="og:title" content="The Rock" />
+<meta property="og:type" content="video.movie" />
+<meta property="og:url" content="https://www.imdb.com/title/tt0117500/" />
+<meta property="og:image" content="https://ia.media-imdb.com/images/rock.jpg" />
+<meta property="og:image" content="https://ia.media-imdb.com/images/rock2.jpg" />
+"""
+
+OpenGraph.parse(basic_metadata)
+```
+
+#### Parse optional metadata
+
+[https://ogp.me/#optional](https://ogp.me/#optional)
+
+```elixir
+# Optional Metadata
+
+optional_metadata = """
+<meta property="og:audio" content="https://example.com/bond/theme.mp3" />
+<meta property="og:description" 
+  content="Sean Connery found fame and fortune as the
+           suave, sophisticated British agent, James Bond." />
+<meta property="og:determiner" content="the" />
+<meta property="og:locale" content="en_GB" />
+<meta property="og:locale:alternate" content="fr_FR" />
+<meta property="og:site_name" content="IMDb" />
+<meta property="og:video" content="https://example.com/bond/trailer.swf" />
+"""
+
+OpenGraph.parse(optional_metadata)
+```
+
+### Fetch and parse from a URL
+
+#### Fetch GitHub
+
+```elixir
+OpenGraph.fetch("https://github.com")
+```
+
+#### Fetch ProductHunt
+
+[https://producthunt.com](https://producthunt.com) redirects to [https://www.producthunt.com,](https://www.producthunt.com,) ogp handles the situation automatically.
+
+```elixir
+OpenGraph.fetch("https://producthunt.com")
+```
