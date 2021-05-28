@@ -14,7 +14,27 @@ defmodule OpenGraph do
     :video
   ]
 
-  @spec fetch(String) :: __MODULE__
+  @type value :: String.t() | nil
+
+  @type t :: %__MODULE__{
+          title: value,
+          type: value,
+          image: value,
+          url: value,
+          audio: value,
+          description: value,
+          determiner: value,
+          locale: value,
+          site_name: value,
+          video: value
+        }
+
+  @doc """
+  Fetch URL and parse Open Graph protocol.
+
+  Returns `%OpenGraph{}`.
+  """
+  @spec fetch(String.t()) :: OpenGraph.t()
   def fetch(url) do
     case Finch.build(:get, url) |> Finch.request(OpenGraphFinch) do
       {:ok, %Finch.Response{status: status} = response} when status in [301, 302] ->
@@ -30,7 +50,17 @@ defmodule OpenGraph do
     end
   end
 
-  @spec parse(String) :: __MODULE__
+  @doc """
+  Parse Open Graph protocol.
+
+  Returns `%OpenGraph{}`.
+
+  ## Examples
+
+      iex> OpenGraph.parse("<meta property='og:title' content='GitHub' />")
+      %OpenGraph{title: "GitHub"}
+  """
+  @spec parse(String.t()) :: OpenGraph.t()
   def parse(html) do
     {:ok, document} = Floki.parse_document(html)
     og_elements = Floki.find(document, "meta[property^='og:'][content]")
