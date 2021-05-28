@@ -33,7 +33,7 @@ defmodule OpenGraph do
   @spec parse(String) :: __MODULE__
   def parse(html) do
     {:ok, document} = Floki.parse_document(html)
-    og_elements = Floki.find(document, "meta[property^='og:']")
+    og_elements = Floki.find(document, "meta[property^='og:'][content]")
     properties = Floki.attribute(og_elements, "property")
     contents = Floki.attribute(og_elements, "content")
 
