@@ -17,7 +17,7 @@ defmodule OpenGraph do
   @spec fetch(String) :: __MODULE__
   def fetch(url) do
     case Finch.build(:get, url) |> Finch.request(OpenGraphFinch) do
-      {:ok, %Finch.Response{status: status} = response} when status >= 301 and status < 310 ->
+      {:ok, %Finch.Response{status: status} = response} when status in [301, 302] ->
         # Follow redirect
         {"location", location} = List.keyfind(response.headers, "location", 0)
         fetch(location)
