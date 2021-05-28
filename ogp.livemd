@@ -54,7 +54,7 @@ OpenGraph.parse(optional_metadata)
 OpenGraph.fetch("https://github.com")
 ```
 
-#### Fetch ProductHunt
+#### Fetch Product Hunt
 
 [https://producthunt.com](https://producthunt.com) redirects to [https://www.producthunt.com,](https://www.producthunt.com,) ogp handles the situation automatically.
 
