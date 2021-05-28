@@ -21,21 +21,19 @@ defmodule OpenGraphTest do
     <meta property="og:video" content="https://example.com/bond/trailer.swf" />
     """
 
-    expected = %OpenGraph{
-      title: "The Rock",
-      type: "video.movie",
-      url: "https://www.imdb.com/title/tt0117500/",
-      image: "https://ia.media-imdb.com/images/rock.jpg",
-      audio: "https://example.com/bond/theme.mp3",
-      description: "Sean Connery found fame and fortune as the
+    assert %OpenGraph{
+             title: "The Rock",
+             type: "video.movie",
+             url: "https://www.imdb.com/title/tt0117500/",
+             image: "https://ia.media-imdb.com/images/rock.jpg",
+             audio: "https://example.com/bond/theme.mp3",
+             description: "Sean Connery found fame and fortune as the
           suave, sophisticated British agent, James Bond.",
-      determiner: "the",
-      locale: "en_GB",
-      site_name: "IMDb",
-      video: "https://example.com/bond/trailer.swf"
-    }
-
-    assert expected == OpenGraph.parse(html)
+             determiner: "the",
+             locale: "en_GB",
+             site_name: "IMDb",
+             video: "https://example.com/bond/trailer.swf"
+           } = OpenGraph.parse(html)
   end
 
   test "fetch URL" do
