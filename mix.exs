@@ -7,7 +7,21 @@ defmodule OpenGraph.MixProject do
       version: "1.0.0",
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+
+      # Hex
+      description: "The Open Graph protocol library in Elixir.",
+      package: package()
+    ]
+  end
+
+  defp package do
+    [
+      name: "ogp",
+      licenses: ["MIT"],
+      links: %{"GitHub" => "https://github.com/goofansu/ogp"},
+      source_url: "https://github.com/goofansu/ogp",
+      homepage_url: "https://github.com/goofansu/ogp"
     ]
   end
 
@@ -22,8 +36,9 @@ defmodule OpenGraph.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:ex_doc, "~> 0.24", only: :dev, runtime: false},
       {:floki, "~> 0.27"},
-      {:finch, "~> 0.6"}
+      {:finch, "~> 0.6"},
     ]
   end
 end
