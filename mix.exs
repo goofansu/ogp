@@ -11,7 +11,8 @@ defmodule OpenGraph.MixProject do
 
       # Hex
       description: "The Open Graph protocol library in Elixir.",
-      package: package()
+      package: package(),
+      docs: docs()
     ]
   end
 
@@ -22,6 +23,13 @@ defmodule OpenGraph.MixProject do
       links: %{"GitHub" => "https://github.com/goofansu/ogp"},
       source_url: "https://github.com/goofansu/ogp",
       homepage_url: "https://github.com/goofansu/ogp"
+    ]
+  end
+
+  defp docs do
+    [
+      main: "readme",
+      extras: ["README.md"]
     ]
   end
 
