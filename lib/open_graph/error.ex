@@ -1,6 +1,4 @@
 defmodule OpenGraph.Error do
-  @moduledoc false
-
   defexception [:reason]
 
   @impl true
