@@ -55,7 +55,7 @@ iex> OpenGraph.parse(html)
 - Fetch URL and parse
 
 ```elixir
-iex> OpenGraph.fetch("https://github.com")
+iex> OpenGraph.fetch!("https://github.com")
 %OpenGraph{
   audio: nil,
   description: "GitHub is where over 65 million developers shape the future of software, together. Contribute to the open source community, manage your Git repositories, review code like a pro, track bugs and feat...",
