@@ -1,8 +1,12 @@
 # ogp
 
-## Usage
+## Install
 
-Notice: Structured properties like `og:image:url` is not supported.
+```elixir
+Mix.install([{:ogp, "~> 1.0.0"}])
+```
+
+## Usage
 
 ### Parse from HTML
 
@@ -51,7 +55,7 @@ OpenGraph.parse(optional_metadata)
 #### Fetch GitHub
 
 ```elixir
-OpenGraph.fetch("https://github.com")
+OpenGraph.fetch!("https://github.com")
 ```
 
 #### Fetch Product Hunt
@@ -59,5 +63,5 @@ OpenGraph.fetch("https://github.com")
 [https://producthunt.com](https://producthunt.com) redirects to [https://www.producthunt.com,](https://www.producthunt.com,) ogp handles the situation automatically.
 
 ```elixir
-OpenGraph.fetch("https://producthunt.com")
+OpenGraph.fetch!("https://producthunt.com")
 ```
