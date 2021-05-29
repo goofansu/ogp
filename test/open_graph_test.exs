@@ -1,5 +1,5 @@
 defmodule OpenGraphTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   doctest OpenGraph
 
   test "parse HTML" do
@@ -36,17 +36,24 @@ defmodule OpenGraphTest do
            } = OpenGraph.parse(html)
   end
 
-  test "fetch URL" do
-    assert %OpenGraph{
-             site_name: "GitHub",
-             url: "https://github.com/"
-           } = OpenGraph.fetch("https://github.com")
+  test "fetch/1" do
+    {:ok, result} = OpenGraph.fetch("https://github.com")
+    assert %OpenGraph{site_name: "GitHub", url: "https://github.com/"} = result
   end
 
-  test "fetch and follow redirect URL" do
-    assert %OpenGraph{
-             site_name: "Product Hunt",
-             url: "https://www.producthunt.com/"
-           } = OpenGraph.fetch("https://producthunt.com")
+  test "fetch/1 with redirect URL" do
+    {:ok, result} = OpenGraph.fetch("https://producthunt.com")
+    assert %OpenGraph{site_name: "Product Hunt", url: "https://www.producthunt.com/"} = result
+  end
+
+  test "fetch!/1" do
+    assert %OpenGraph{site_name: "GitHub", url: "https://github.com/"} =
+             OpenGraph.fetch!("https://github.com")
+  end
+
+  test "fetch!/1 request failed" do
+    assert_raise OpenGraph.Error, ~r/request failed./, fn ->
+      OpenGraph.fetch!("https://non.exist.website")
+    end
   end
 end
