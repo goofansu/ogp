@@ -19,7 +19,7 @@ end
 
 I recommend to run [ogp.livemd](./ogp.livemd) in [Livebook](https://github.com/elixir-nx/livebook) for detail.
 
-- Parse HTML
+### Parse HTML
 
 ```elixir
 iex> html = """
@@ -53,7 +53,7 @@ iex> OpenGraph.parse(html)
 }
 ```
 
-- Fetch URL and parse
+### Fetch URL
 
 ```elixir
 iex> OpenGraph.fetch!("https://github.com")
@@ -71,7 +71,7 @@ iex> OpenGraph.fetch!("https://github.com")
 }
 ```
 
-- Fetch supports follow redirect URL
+Redirect is followed automatically, see the following example:
 
 ```elixir
 iex> OpenGraph.fetch!("https://producthunt.com")
