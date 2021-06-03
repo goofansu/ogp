@@ -50,6 +50,24 @@ defmodule OpenGraphTest do
     assert @expected = parse(@html)
   end
 
+  test "parse/1 returns OpenGraph struct for HTML contains invalid meta tags" do
+    assert %OpenGraph{
+             url: nil,
+             site_name: "IMDb",
+             locale: "en_GB",
+             title: nil,
+             type: "video.movie"
+           } =
+             parse("""
+             <meta property="og:url" />
+             <meta property="og::site_name" content="IMDb" />
+             <meta property="og:site_name" content="IMDb" />
+             <meta content="en_GB" property="og:locale" />
+             <meta property=" og:title " content="The Rock" />
+             <meta property="og:type" content="video.movie">
+             """)
+  end
+
   test "fetch!/1 succeeds for direct URL", %{bypass: bypass} do
     Bypass.expect_once(bypass, "GET", "/", fn conn ->
       Plug.Conn.resp(conn, 200, @html)
