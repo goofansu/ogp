@@ -3,6 +3,7 @@
 The [Open Graph protocol](https://ogp.me/) library in Elixir.
 
 [![CI](https://github.com/goofansu/ogp/actions/workflows/ci.yml/badge.svg)](https://github.com/goofansu/ogp/actions/workflows/ci.yml)
+[![Coverage Status](https://coveralls.io/repos/github/goofansu/ogp/badge.svg?branch=main)](https://coveralls.io/github/goofansu/ogp?branch=main)
 
 ## Installation
 
