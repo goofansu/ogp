@@ -60,7 +60,9 @@ defmodule OpenGraphTest do
 
   test "fetch!/1 succeeds for redirect URL", %{bypass: bypass} do
     Bypass.expect_once(bypass, fn conn ->
-      conn = Plug.Conn.put_resp_header(conn, "location", endpoint_url(bypass.port) <> "/redirected")
+      conn =
+        Plug.Conn.put_resp_header(conn, "location", endpoint_url(bypass.port) <> "/redirected")
+
       Plug.Conn.resp(conn, 301, "")
     end)
 
@@ -71,7 +73,9 @@ defmodule OpenGraphTest do
     assert @expected = fetch!(endpoint_url(bypass.port))
   end
 
-  test "fetch!/1 raises redirect failed exception when missing location for redirected URL", %{bypass: bypass} do
+  test "fetch!/1 raises redirect failed exception when missing location for redirected URL", %{
+    bypass: bypass
+  } do
     Bypass.expect_once(bypass, fn conn ->
       Plug.Conn.resp(conn, 301, "")
     end)
@@ -81,7 +85,9 @@ defmodule OpenGraphTest do
     end
   end
 
-  test "fetch!/1 raises response unexpected exception for unexpected status code", %{bypass: bypass} do
+  test "fetch!/1 raises response unexpected exception for unexpected status code", %{
+    bypass: bypass
+  } do
     Bypass.expect_once(bypass, fn conn ->
       Plug.Conn.resp(conn, 500, "Internal Server Error")
     end)
@@ -109,7 +115,9 @@ defmodule OpenGraphTest do
 
   test "fetch/1 succeeds for redirect URL", %{bypass: bypass} do
     Bypass.expect_once(bypass, fn conn ->
-      conn = Plug.Conn.put_resp_header(conn, "location", endpoint_url(bypass.port) <> "/redirected")
+      conn =
+        Plug.Conn.put_resp_header(conn, "location", endpoint_url(bypass.port) <> "/redirected")
+
       Plug.Conn.resp(conn, 301, "")
     end)
 
@@ -120,7 +128,9 @@ defmodule OpenGraphTest do
     assert {:ok, @expected} = fetch(endpoint_url(bypass.port))
   end
 
-  test "fetch/1 returns redirect failed error when missing location for redirected URL", %{bypass: bypass} do
+  test "fetch/1 returns redirect failed error when missing location for redirected URL", %{
+    bypass: bypass
+  } do
     Bypass.expect_once(bypass, fn conn ->
       Plug.Conn.resp(conn, 301, "")
     end)
