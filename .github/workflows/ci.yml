@@ -38,6 +38,9 @@ jobs:
           - erlang: 21.3
             elixir: 1.7.4
 
+    env:
+      MIX_ENV: test
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v2
       - uses: erlef/setup-elixir@v1
@@ -47,5 +50,3 @@ jobs:
       - run: mix deps.get
       - run: mix test
       - run: mix coveralls.github
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
