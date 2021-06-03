@@ -8,6 +8,7 @@ defmodule OpenGraph.MixProject do
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
+      test_coverage: [tool: ExCoveralls],
 
       # Hex
       description: "The Open Graph protocol library in Elixir.",
@@ -47,7 +48,8 @@ defmodule OpenGraph.MixProject do
       {:ex_doc, "~> 0.24", only: :dev, runtime: false},
       {:floki, "~> 0.27"},
       {:finch, "~> 0.6"},
-      {:bypass, "~> 2.1", only: :test}
+      {:bypass, "~> 2.1", only: :test},
+      {:excoveralls, "~> 0.10", only: :test}
     ]
   end
 end
