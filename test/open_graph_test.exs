@@ -3,6 +3,7 @@ defmodule OpenGraphTest do
   doctest OpenGraph
 
   import OpenGraph
+  alias OpenGraph.Error
 
   setup do
     bypass = Bypass.open()
@@ -75,7 +76,7 @@ defmodule OpenGraphTest do
       Plug.Conn.resp(conn, 301, "")
     end)
 
-    assert_raise OpenGraph.Error, ~r/redirect failed/, fn ->
+    assert_raise Error, ~r/redirect failed/, fn ->
       fetch!(endpoint_url(bypass.port))
     end
   end
@@ -85,7 +86,7 @@ defmodule OpenGraphTest do
       Plug.Conn.resp(conn, 500, "Internal Server Error")
     end)
 
-    assert_raise OpenGraph.Error, ~r/response unexpected/, fn ->
+    assert_raise Error, ~r/response unexpected/, fn ->
       fetch!(endpoint_url(bypass.port))
     end
   end
@@ -93,7 +94,7 @@ defmodule OpenGraphTest do
   test "fetch!/1 raises request failed exception for server downtime", %{bypass: bypass} do
     Bypass.down(bypass)
 
-    assert_raise OpenGraph.Error, ~r/request failed/, fn ->
+    assert_raise Error, ~r/request failed/, fn ->
       fetch!(endpoint_url(bypass.port))
     end
   end
