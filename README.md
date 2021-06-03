@@ -70,3 +70,21 @@ iex> OpenGraph.fetch!("https://github.com")
   video: nil
 }
 ```
+
+- Fetch supports follow redirect URL
+
+```elixir
+iex> OpenGraph.fetch!("https://producthunt.com")
+%OpenGraph{
+  audio: nil,
+  description: "Product Hunt is a curation of the best new products, every day. Discover the latest mobile apps, websites, and technology products that everyone's talking about.",
+  determiner: nil,
+  image: "https://ph-static.imgix.net/ph-logo-1.png",
+  locale: "en_US",
+  site_name: "Product Hunt",
+  title: " Product Hunt – The best new products in tech. ",
+  type: "article",
+  url: "https://www.producthunt.com/",
+  video: nil
+}
+```
