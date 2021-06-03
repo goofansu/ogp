@@ -2,58 +2,142 @@ defmodule OpenGraphTest do
   use ExUnit.Case, async: true
   doctest OpenGraph
 
-  test "parse HTML" do
-    html = """
-    <meta property="og:title" content="The Rock" />
-    <meta property="og:type" content="video.movie" />
-    <meta property="og:url" content="https://www.imdb.com/title/tt0117500/" />
-    <meta property="og:image" content="https://ia.media-imdb.com/images/rock.jpg" />
-    <meta property="og:image" content="https://ia.media-imdb.com/images/rock2.jpg" />
-    <meta property="og:audio" content="https://example.com/bond/theme.mp3" />
-    <meta property="og:description"
-      content="Sean Connery found fame and fortune as the
-              suave, sophisticated British agent, James Bond." />
-    <meta property="og:determiner" content="the" />
-    <meta property="og:locale" content="en_GB" />
-    <meta property="og:locale:alternate" content="fr_FR" />
-    <meta property="og:locale:alternate" content="es_ES" />
-    <meta property="og:site_name" content="IMDb" />
-    <meta property="og:video" content="https://example.com/bond/trailer.swf" />
-    """
+  import OpenGraph
 
-    assert %OpenGraph{
-             title: "The Rock",
-             type: "video.movie",
-             url: "https://www.imdb.com/title/tt0117500/",
-             image: "https://ia.media-imdb.com/images/rock.jpg",
-             audio: "https://example.com/bond/theme.mp3",
-             description: "Sean Connery found fame and fortune as the
-          suave, sophisticated British agent, James Bond.",
-             determiner: "the",
-             locale: "en_GB",
-             site_name: "IMDb",
-             video: "https://example.com/bond/trailer.swf"
-           } = OpenGraph.parse(html)
+  setup do
+    bypass = Bypass.open()
+    [bypass: bypass]
   end
 
-  test "fetch/1" do
-    {:ok, result} = OpenGraph.fetch("https://github.com")
-    assert %OpenGraph{site_name: "GitHub", url: "https://github.com/"} = result
+  defp endpoint_url(port), do: "http://localhost:#{port}"
+
+  @html """
+  <html prefix="og: https://ogp.me/ns#">
+  <head>
+  <title>The Rock (1996)</title>
+  <meta property="og:title" content="The Rock" />
+  <meta property="og:type" content="video.movie" />
+  <meta property="og:url" content="https://www.imdb.com/title/tt0117500/" />
+  <meta property="og:image" content="https://ia.media-imdb.com/images/rock.jpg" />
+  <meta property="og:image" content="https://ia.media-imdb.com/images/rock2.jpg" />
+  <meta property="og:audio" content="https://example.com/bond/theme.mp3" />
+  <meta property="og:description" content="brief description" />
+  <meta property="og:determiner" content="the" />
+  <meta property="og:locale" content="en_GB" />
+  <meta property="og:locale:alternate" content="fr_FR" />
+  <meta property="og:locale:alternate" content="es_ES" />
+  <meta property="og:site_name" content="IMDb" />
+  <meta property="og:video" content="https://example.com/bond/trailer.swf" />
+  </head>
+  </html>
+  """
+
+  @expected %OpenGraph{
+    title: "The Rock",
+    type: "video.movie",
+    url: "https://www.imdb.com/title/tt0117500/",
+    image: "https://ia.media-imdb.com/images/rock.jpg",
+    audio: "https://example.com/bond/theme.mp3",
+    description: "brief description",
+    determiner: "the",
+    locale: "en_GB",
+    site_name: "IMDb",
+    video: "https://example.com/bond/trailer.swf"
+  }
+
+  test "parse/1 returns OpenGraph struct" do
+    assert @expected = parse(@html)
   end
 
-  test "fetch/1 with redirect URL" do
-    {:ok, result} = OpenGraph.fetch("https://producthunt.com")
-    assert %OpenGraph{site_name: "Product Hunt", url: "https://www.producthunt.com/"} = result
+  test "fetch!/1 succeeds for direct URL", %{bypass: bypass} do
+    Bypass.expect_once(bypass, "GET", "/", fn conn ->
+      Plug.Conn.resp(conn, 200, @html)
+    end)
+
+    assert @expected = fetch!(endpoint_url(bypass.port))
   end
 
-  test "fetch!/1" do
-    assert %OpenGraph{site_name: "GitHub", url: "https://github.com/"} =
-             OpenGraph.fetch!("https://github.com")
+  test "fetch!/1 succeeds for redirect URL", %{bypass: bypass} do
+    Bypass.expect_once(bypass, fn conn ->
+      conn = Plug.Conn.put_resp_header(conn, "location", endpoint_url(bypass.port) <> "/redirected")
+      Plug.Conn.resp(conn, 301, "")
+    end)
+
+    Bypass.expect_once(bypass, "GET", "/redirected", fn conn ->
+      Plug.Conn.resp(conn, 200, @html)
+    end)
+
+    assert @expected = fetch!(endpoint_url(bypass.port))
   end
 
-  test "fetch!/1 request failed" do
-    assert_raise OpenGraph.Error, ~r/request failed./, fn ->
-      OpenGraph.fetch!("https://non.exist.website")
+  test "fetch!/1 raises redirect failed exception when missing location for redirected URL", %{bypass: bypass} do
+    Bypass.expect_once(bypass, fn conn ->
+      Plug.Conn.resp(conn, 301, "")
+    end)
+
+    assert_raise OpenGraph.Error, ~r/redirect failed/, fn ->
+      fetch!(endpoint_url(bypass.port))
     end
+  end
+
+  test "fetch!/1 raises response unexpected exception for unexpected status code", %{bypass: bypass} do
+    Bypass.expect_once(bypass, fn conn ->
+      Plug.Conn.resp(conn, 500, "Internal Server Error")
+    end)
+
+    assert_raise OpenGraph.Error, ~r/response unexpected/, fn ->
+      fetch!(endpoint_url(bypass.port))
+    end
+  end
+
+  test "fetch!/1 raises request failed exception for server downtime", %{bypass: bypass} do
+    Bypass.down(bypass)
+
+    assert_raise OpenGraph.Error, ~r/request failed/, fn ->
+      fetch!(endpoint_url(bypass.port))
+    end
+  end
+
+  test "fetch/1 succeeds for direct URL", %{bypass: bypass} do
+    Bypass.expect_once(bypass, "GET", "/", fn conn ->
+      Plug.Conn.resp(conn, 200, @html)
+    end)
+
+    assert {:ok, @expected} = fetch(endpoint_url(bypass.port))
+  end
+
+  test "fetch/1 succeeds for redirect URL", %{bypass: bypass} do
+    Bypass.expect_once(bypass, fn conn ->
+      conn = Plug.Conn.put_resp_header(conn, "location", endpoint_url(bypass.port) <> "/redirected")
+      Plug.Conn.resp(conn, 301, "")
+    end)
+
+    Bypass.expect_once(bypass, "GET", "/redirected", fn conn ->
+      Plug.Conn.resp(conn, 200, @html)
+    end)
+
+    assert {:ok, @expected} = fetch(endpoint_url(bypass.port))
+  end
+
+  test "fetch/1 returns redirect failed error when missing location for redirected URL", %{bypass: bypass} do
+    Bypass.expect_once(bypass, fn conn ->
+      Plug.Conn.resp(conn, 301, "")
+    end)
+
+    assert {:error, {:redirect_failed, 301}} = fetch(endpoint_url(bypass.port))
+  end
+
+  test "fetch/1 returns response unexpected error for unexpected status code", %{bypass: bypass} do
+    Bypass.expect_once(bypass, fn conn ->
+      Plug.Conn.resp(conn, 500, "Internal Server Error")
+    end)
+
+    assert {:error, {:response_unexpected, 500}} = fetch(endpoint_url(bypass.port))
+  end
+
+  test "fetch/1 returns request failed error for server downtime", %{bypass: bypass} do
+    Bypass.down(bypass)
+
+    assert {:error, {:request_failed, :econnrefused}} = fetch(endpoint_url(bypass.port))
   end
 end

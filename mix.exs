@@ -46,7 +46,8 @@ defmodule OpenGraph.MixProject do
     [
       {:ex_doc, "~> 0.24", only: :dev, runtime: false},
       {:floki, "~> 0.27"},
-      {:finch, "~> 0.6"}
+      {:finch, "~> 0.6"},
+      {:bypass, "~> 2.1", only: :test}
     ]
   end
 end
