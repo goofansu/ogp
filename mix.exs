@@ -46,10 +46,10 @@ defmodule OpenGraph.MixProject do
   defp deps do
     [
       {:ex_doc, "~> 0.24", only: :dev, runtime: false},
-      {:floki, "~> 0.27"},
-      {:finch, "~> 0.6"},
       {:bypass, "~> 2.1", only: :test},
-      {:excoveralls, "~> 0.10", only: :test}
+      {:excoveralls, "~> 0.10", only: :test},
+      {:floki, "~> 0.27"},
+      {:finch, "~> 0.6"}
     ]
   end
 end
