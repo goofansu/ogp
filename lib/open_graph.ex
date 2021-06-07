@@ -32,14 +32,10 @@ defmodule OpenGraph do
   @doc """
   Fetch URL and parse Open Graph protocol.
 
-  Returns `{:ok, %OpenGraph{}}` for succussful request, otherwise, returns `{:error, reason}`.
+  Returns `{:ok, %OpenGraph{}}` for succussful request, otherwise, returns `{:error, %OpenGraph.Error{}}`.
   """
-  @type reason ::
-          {:redirect_failed, integer}
-          | {:response_unexpected, integer}
-          | {:request_failed, String.t()}
 
-  @spec fetch(String.t()) :: {:ok, OpenGraph.t()} | {:error, reason}
+  @spec fetch(String.t()) :: {:ok, OpenGraph.t()} | {:error, OpenGraph.Error.t()}
   def fetch(url) do
     case Finch.build(:get, url) |> Finch.request(OpenGraphFinch) do
       {:ok, %Finch.Response{status: status} = response} when status in 200..299 ->
@@ -51,14 +47,17 @@ defmodule OpenGraph do
             fetch(location)
 
           nil ->
-            {:error, {:redirect_failed, response.status}}
+            reason = {:missing_redirect_location, status}
+            {:error, %OpenGraph.Error{reason: reason}}
         end
 
-      {:ok, response} ->
-        {:error, {:response_unexpected, response.status}}
+      {:ok, %Finch.Response{status: status}} ->
+        reason = {:unexpected_status_code, status}
+        {:error, %OpenGraph.Error{reason: reason}}
 
-      {:error, %{reason: reason}} ->
-        {:error, {:request_failed, reason}}
+      {:error, error} ->
+        reason = {:request_error, Exception.message(error)}
+        {:error, %OpenGraph.Error{reason: reason}}
     end
   end
 
@@ -73,8 +72,8 @@ defmodule OpenGraph do
       {:ok, result} ->
         result
 
-      {:error, reason} ->
-        raise OpenGraph.Error, reason: reason
+      {:error, error} ->
+        raise error
     end
   end
 

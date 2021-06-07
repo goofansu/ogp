@@ -46,11 +46,11 @@ defmodule OpenGraphTest do
     video: "https://example.com/bond/trailer.swf"
   }
 
-  test "parse/1 returns OpenGraph struct" do
+  test "parse/1 succeeds for standard meta tags" do
     assert @expected = parse(@html)
   end
 
-  test "parse/1 returns OpenGraph struct for HTML contains invalid meta tags" do
+  test "parse/1 succeeds for non-standard meta tags" do
     assert %OpenGraph{
              url: nil,
              site_name: "IMDb",
@@ -68,7 +68,7 @@ defmodule OpenGraphTest do
              """)
   end
 
-  test "fetch!/1 succeeds for direct URL", %{bypass: bypass} do
+  test "fetch!/1 succeeds for 200 OK request", %{bypass: bypass} do
     Bypass.expect_once(bypass, "GET", "/", fn conn ->
       Plug.Conn.resp(conn, 200, @html)
     end)
@@ -76,7 +76,7 @@ defmodule OpenGraphTest do
     assert @expected = fetch!(endpoint_url(bypass.port))
   end
 
-  test "fetch!/1 succeeds for redirect URL", %{bypass: bypass} do
+  test "fetch!/1 succeeds for 301 redirect request", %{bypass: bypass} do
     Bypass.expect_once(bypass, fn conn ->
       conn =
         Plug.Conn.put_resp_header(conn, "location", endpoint_url(bypass.port) <> "/redirected")
@@ -91,39 +91,41 @@ defmodule OpenGraphTest do
     assert @expected = fetch!(endpoint_url(bypass.port))
   end
 
-  test "fetch!/1 raises redirect failed exception when missing location for redirected URL", %{
+  test "fetch!/1 raises exception for redirect missing location in HTTP headers", %{
     bypass: bypass
   } do
     Bypass.expect_once(bypass, fn conn ->
       Plug.Conn.resp(conn, 301, "")
     end)
 
-    assert_raise Error, ~r/redirect failed/, fn ->
-      fetch!(endpoint_url(bypass.port))
-    end
+    assert_raise Error,
+                 "redirect response is received but location not found in HTTP headers. HTTP status code: 301",
+                 fn ->
+                   fetch!(endpoint_url(bypass.port))
+                 end
   end
 
-  test "fetch!/1 raises response unexpected exception for unexpected status code", %{
+  test "fetch!/1 raises exception for unexpected status code", %{
     bypass: bypass
   } do
     Bypass.expect_once(bypass, fn conn ->
       Plug.Conn.resp(conn, 500, "Internal Server Error")
     end)
 
-    assert_raise Error, ~r/response unexpected/, fn ->
+    assert_raise Error, "unexpected response is received. HTTP status code: 500", fn ->
       fetch!(endpoint_url(bypass.port))
     end
   end
 
-  test "fetch!/1 raises request failed exception for server downtime", %{bypass: bypass} do
+  test "fetch!/1 raises exception for server downtime", %{bypass: bypass} do
     Bypass.down(bypass)
 
-    assert_raise Error, ~r/request failed/, fn ->
+    assert_raise Error, "request error. reason: connection refused", fn ->
       fetch!(endpoint_url(bypass.port))
     end
   end
 
-  test "fetch/1 succeeds for direct URL", %{bypass: bypass} do
+  test "fetch/1 succeeds for 200 OK request", %{bypass: bypass} do
     Bypass.expect_once(bypass, "GET", "/", fn conn ->
       Plug.Conn.resp(conn, 200, @html)
     end)
@@ -131,7 +133,7 @@ defmodule OpenGraphTest do
     assert {:ok, @expected} = fetch(endpoint_url(bypass.port))
   end
 
-  test "fetch/1 succeeds for redirect URL", %{bypass: bypass} do
+  test "fetch/1 succeeds for 301 redirect request", %{bypass: bypass} do
     Bypass.expect_once(bypass, fn conn ->
       conn =
         Plug.Conn.put_resp_header(conn, "location", endpoint_url(bypass.port) <> "/redirected")
@@ -146,27 +148,30 @@ defmodule OpenGraphTest do
     assert {:ok, @expected} = fetch(endpoint_url(bypass.port))
   end
 
-  test "fetch/1 returns redirect failed error when missing location for redirected URL", %{
+  test "fetch/1 returns error for redirect missing location in HTTP headers", %{
     bypass: bypass
   } do
     Bypass.expect_once(bypass, fn conn ->
       Plug.Conn.resp(conn, 301, "")
     end)
 
-    assert {:error, {:redirect_failed, 301}} = fetch(endpoint_url(bypass.port))
+    assert {:error, %OpenGraph.Error{reason: {:missing_redirect_location, 301}}} =
+             fetch(endpoint_url(bypass.port))
   end
 
-  test "fetch/1 returns response unexpected error for unexpected status code", %{bypass: bypass} do
+  test "fetch/1 returns error for unexpected status code", %{bypass: bypass} do
     Bypass.expect_once(bypass, fn conn ->
       Plug.Conn.resp(conn, 500, "Internal Server Error")
     end)
 
-    assert {:error, {:response_unexpected, 500}} = fetch(endpoint_url(bypass.port))
+    assert {:error, %OpenGraph.Error{reason: {:unexpected_status_code, 500}}} =
+             fetch(endpoint_url(bypass.port))
   end
 
-  test "fetch/1 returns request failed error for server downtime", %{bypass: bypass} do
+  test "fetch/1 returns error for server downtime", %{bypass: bypass} do
     Bypass.down(bypass)
 
-    assert {:error, {:request_failed, :econnrefused}} = fetch(endpoint_url(bypass.port))
+    assert {:error, %OpenGraph.Error{reason: {:request_error, _}}} =
+             fetch(endpoint_url(bypass.port))
   end
 end

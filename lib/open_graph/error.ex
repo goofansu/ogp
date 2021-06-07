@@ -6,15 +6,15 @@ defmodule OpenGraph.Error do
     format_reason(reason)
   end
 
-  defp format_reason({:redirect_failed, status}) do
-    "redirect failed. status: #{status}"
+  defp format_reason({:missing_redirect_location, status_code}) do
+    "redirect response is received but location not found in HTTP headers. HTTP status code: #{status_code}"
   end
 
-  defp format_reason({:response_unexpected, status}) do
-    "response unexpected. status: #{status}"
+  defp format_reason({:unexpected_status_code, status_code}) do
+    "unexpected response is received. HTTP status code: #{status_code}"
   end
 
-  defp format_reason({:request_failed, reason}) do
-    "request failed. reason: #{reason}"
+  defp format_reason({:request_error, reason}) do
+    "request error. reason: #{reason}"
   end
 end
