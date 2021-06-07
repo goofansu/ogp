@@ -1,6 +1,15 @@
 defmodule OpenGraph.Error do
   defexception [:reason]
 
+  @type status_code() :: integer()
+
+  @type reason() ::
+          {:missing_redirect_location, status_code()}
+          | {:unexpected_status_code, status_code()}
+          | {:request_error, String.t()}
+
+  @type t() :: %__MODULE__{reason: reason()}
+
   @impl true
   def message(%__MODULE__{reason: reason}) do
     format_reason(reason)
