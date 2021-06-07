@@ -14,19 +14,19 @@ defmodule OpenGraph do
     :video
   ]
 
-  @type value :: String.t() | nil
+  @type value() :: String.t() | nil
 
-  @type t :: %__MODULE__{
-          title: value,
-          type: value,
-          image: value,
-          url: value,
-          audio: value,
-          description: value,
-          determiner: value,
-          locale: value,
-          site_name: value,
-          video: value
+  @type t() :: %__MODULE__{
+          title: value(),
+          type: value(),
+          image: value(),
+          url: value(),
+          audio: value(),
+          description: value(),
+          determiner: value(),
+          locale: value(),
+          site_name: value(),
+          video: value()
         }
 
   @doc """
