@@ -42,10 +42,10 @@ defmodule OpenGraph do
   @spec fetch(String.t()) :: {:ok, OpenGraph.t()} | {:error, reason}
   def fetch(url) do
     case Finch.build(:get, url) |> Finch.request(OpenGraphFinch) do
-      {:ok, %Finch.Response{status: status} = response} when status >= 200 and status <= 299 ->
+      {:ok, %Finch.Response{status: status} = response} when status in 200..299 ->
         {:ok, parse(response.body)}
 
-      {:ok, %Finch.Response{status: status} = response} when status >= 300 and status <= 399 ->
+      {:ok, %Finch.Response{status: status} = response} when status in 300..399 ->
         case List.keyfind(response.headers, "location", 0) do
           {_, location} ->
             fetch(location)
