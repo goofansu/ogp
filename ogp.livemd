@@ -48,16 +48,11 @@ OpenGraph.parse(optional_metadata)
 
 ### Fetch URL
 
-#### Direct URL
+#### Input URL
+
+<!-- livebook:{"livebook_object":"cell_input","name":"URL","type":"url","value":"https://nature.com"} -->
 
 ```elixir
-OpenGraph.fetch!("https://github.com")
-```
-
-#### Follow redirect
-
-[https://producthunt.com](https://producthunt.com) redirects to [https://www.producthunt.com](https://www.producthunt.com), ogp handles the redirect automatically.
-
-```elixir
-OpenGraph.fetch!("https://producthunt.com")
+url = IO.gets("URL") |> String.trim("\n")
+OpenGraph.fetch!(url)
 ```
