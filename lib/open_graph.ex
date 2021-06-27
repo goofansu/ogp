@@ -37,7 +37,7 @@ defmodule OpenGraph do
 
   @spec fetch(String.t()) :: {:ok, OpenGraph.t()} | {:error, OpenGraph.Error.t()}
   def fetch(url) do
-    case Finch.build(:get, url) |> Finch.request(OpenGraphFinch) do
+    case Finch.build(:get, url) |> Finch.request(OpenGraph.Finch) do
       {:ok, %Finch.Response{status: status} = response} when status in 200..299 ->
         {:ok, parse(response.body)}
 
