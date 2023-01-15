@@ -8,10 +8,10 @@ on:
 
 jobs:
   check-format:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v1
-      - uses: erlef/setup-elixir@v1
+      - uses: erlef/setup-beam@v1
         with:
           otp-version: 24.0.1
           elixir-version: 1.12.1
@@ -20,7 +20,7 @@ jobs:
 
   test:
     name: OTP ${{matrix.erlang}} / Elixir ${{matrix.elixir}}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
       matrix:
@@ -43,7 +43,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v2
-      - uses: erlef/setup-elixir@v1
+      - uses: erlef/setup-beam@v1
         with:
           otp-version: ${{matrix.erlang}}
           elixir-version: ${{matrix.elixir}}
