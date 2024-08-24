@@ -4,7 +4,7 @@ defmodule OpenGraph.MixProject do
   def project do
     [
       app: :ogp,
-      version: "1.0.2",
+      version: "1.1.0",
       elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
