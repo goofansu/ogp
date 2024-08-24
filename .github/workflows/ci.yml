@@ -19,34 +19,31 @@ jobs:
       - run: mix format --check-formatted
 
   test:
-    name: OTP ${{matrix.erlang}} / Elixir ${{matrix.elixir}}
+    name: OTP ${{matrix.pair.otp}} / Elixir ${{matrix.pair.elixir}}
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
       matrix:
         include:
-          - erlang: 24.0.1
-            elixir: 1.12.1
-          - erlang: 23.3
-            elixir: 1.11.4
-          - erlang: 23.3
-            elixir: 1.10.4
-          - erlang: 22.3
-            elixir: 1.9.4
-          - erlang: 21.3
-            elixir: 1.8.2
-          - erlang: 21.3
-            elixir: 1.7.4
+          - pair:
+              elixir: "1.13"
+              otp: "24.3.4.10"
+          - pair:
+              elixir: "1.17"
+              otp: "27.0.1"
+            lint: lint
 
     env:
       MIX_ENV: test
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: erlef/setup-beam@v1
+      - uses: actions/checkout@v4
+      - uses: erlef/setup-beam@main
         with:
-          otp-version: ${{matrix.erlang}}
-          elixir-version: ${{matrix.elixir}}
-      - run: mix deps.get
-      - run: mix test
+          otp-version: ${{ matrix.pair.otp }}
+          elixir-version: ${{ matrix.pair.elixir }}
+          version-type: strict
+
+      - run: mix deps.get --check-locked
+      - run: mix test --slowest 5
       - run: mix coveralls.github
