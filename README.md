@@ -17,7 +17,7 @@ end
 
 ## Usage
 
-I recommend to run [ogp.livemd](./ogp.livemd) in [Livebook](https://github.com/elixir-nx/livebook) for detail.
+I recommend to run [ogp.livemd](https://github.com/goofansu/ogp/blob/main/ogp.livemd) in [Livebook](https://github.com/elixir-nx/livebook) for detail.
 
 ### Parse HTML
 
