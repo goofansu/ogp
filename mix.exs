@@ -5,7 +5,7 @@ defmodule OpenGraph.MixProject do
     [
       app: :ogp,
       version: "1.0.2",
-      elixir: "~> 1.7",
+      elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       test_coverage: [tool: ExCoveralls],
@@ -37,19 +37,18 @@ defmodule OpenGraph.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger],
-      mod: {OpenGraph.Application, []}
+      extra_applications: [:logger]
     ]
   end
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:ex_doc, "~> 0.24", only: :dev, runtime: false},
-      {:bypass, "~> 2.1", only: :test},
-      {:excoveralls, "~> 0.10", only: :test},
-      {:floki, "~> 0.27"},
-      {:finch, "~> 0.6"}
+      {:req, "~> 0.5.6"},
+      {:floki, "~> 0.36.2"},
+      {:plug, "~> 1.16", only: :test},
+      {:excoveralls, "~> 0.18.2", only: :test},
+      {:ex_doc, "~> 0.34.2", only: :docs}
     ]
   end
 end
