@@ -14,6 +14,7 @@ defmodule OpenGraph do
     :video
   ]
 
+  @type url() :: URI.t() | String.t()
   @type value() :: String.t() | nil
 
   @type t() :: %__MODULE__{
@@ -35,7 +36,8 @@ defmodule OpenGraph do
   Returns `{:ok, %OpenGraph{}}` for succussful request, otherwise, returns `{:error, %OpenGraph.Error{}}`.
   """
 
-  @spec fetch(String.t()) :: {:ok, OpenGraph.t()} | {:error, OpenGraph.Error.t()}
+  @spec fetch(url(), req_options :: keyword()) ::
+          {:ok, OpenGraph.t()} | {:error, OpenGraph.Error.t()}
   def fetch(url, req_options \\ []) do
     options = Keyword.merge(req_options, Application.get_env(:ogp, :req_options, []))
 
@@ -64,13 +66,13 @@ defmodule OpenGraph do
   end
 
   @doc """
-  Similar to `fetch/1` but raises a `OpenGraph.Error` exception if request failed.
+  Similar to `fetch/2` but raises an `OpenGraph.Error` if request failed.
 
   Returns `%OpenGraph{}`.
   """
-  @spec fetch!(String.t()) :: OpenGraph.t()
-  def fetch!(url) do
-    case fetch(url) do
+  @spec fetch!(url(), req_options :: keyword()) :: OpenGraph.t()
+  def fetch!(url, req_options \\ []) do
+    case fetch(url, req_options) do
       {:ok, result} ->
         result
 
