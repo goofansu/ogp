@@ -37,27 +37,27 @@ defmodule OpenGraph do
 
   @spec fetch(String.t()) :: {:ok, OpenGraph.t()} | {:error, OpenGraph.Error.t()}
   def fetch(url) do
-    case Finch.build(:get, url) |> Finch.request(OpenGraph.Finch) do
-      {:ok, %Finch.Response{status: status} = response} when status in 200..299 ->
+    case Req.get(url) do
+      {:ok, %Req.Response{status: status} = response} when status in 200..299 ->
         {:ok, parse(response.body)}
 
-      {:ok, %Finch.Response{status: status} = response} when status in 300..399 ->
-        case List.keyfind(response.headers, "location", 0) do
-          {_, location} ->
-            fetch(location)
+      {:ok, %Req.Response{status: status}} when status in 300..399 ->
+        {:error,
+         %OpenGraph.Error{
+           reason: {:missing_redirect_location, status}
+         }}
 
-          nil ->
-            reason = {:missing_redirect_location, status}
-            {:error, %OpenGraph.Error{reason: reason}}
-        end
-
-      {:ok, %Finch.Response{status: status}} ->
-        reason = {:unexpected_status_code, status}
-        {:error, %OpenGraph.Error{reason: reason}}
+      {:ok, %Req.Response{status: status}} ->
+        {:error,
+         %OpenGraph.Error{
+           reason: {:unexpected_status_code, status}
+         }}
 
       {:error, error} ->
-        reason = {:request_error, Exception.message(error)}
-        {:error, %OpenGraph.Error{reason: reason}}
+        {:error,
+         %OpenGraph.Error{
+           reason: {:request_error, Exception.message(error)}
+         }}
     end
   end
 

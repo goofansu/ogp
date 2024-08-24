@@ -108,7 +108,7 @@ defmodule OpenGraphTest do
   test "fetch!/1 raises exception for unexpected status code", %{
     bypass: bypass
   } do
-    Bypass.expect_once(bypass, fn conn ->
+    Bypass.expect(bypass, fn conn ->
       Plug.Conn.resp(conn, 500, "Internal Server Error")
     end)
 
@@ -160,7 +160,7 @@ defmodule OpenGraphTest do
   end
 
   test "fetch/1 returns error for unexpected status code", %{bypass: bypass} do
-    Bypass.expect_once(bypass, fn conn ->
+    Bypass.expect(bypass, fn conn ->
       Plug.Conn.resp(conn, 500, "Internal Server Error")
     end)
 
