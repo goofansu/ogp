@@ -5,7 +5,7 @@ defmodule OpenGraph.MixProject do
     [
       app: :ogp,
       version: "1.0.2",
-      elixir: "~> 1.7",
+      elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       test_coverage: [tool: ExCoveralls],
