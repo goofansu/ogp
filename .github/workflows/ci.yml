@@ -7,17 +7,6 @@ on:
       - main
 
 jobs:
-  check-format:
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v1
-      - uses: erlef/setup-beam@v1
-        with:
-          otp-version: 24.0.1
-          elixir-version: 1.12.1
-      - run: mix deps.get
-      - run: mix format --check-formatted
-
   test:
     name: OTP ${{matrix.pair.otp}} / Elixir ${{matrix.pair.elixir}}
     runs-on: ubuntu-20.04
@@ -45,5 +34,6 @@ jobs:
           version-type: strict
 
       - run: mix deps.get --check-locked
+      - run: mix format --check-formatted
       - run: mix test --slowest 5
       - run: mix coveralls.github
