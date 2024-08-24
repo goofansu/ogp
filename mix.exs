@@ -46,7 +46,7 @@ defmodule OpenGraph.MixProject do
     [
       {:req, "~> 0.5.6"},
       {:floki, "~> 0.36.2"},
-      {:bypass, "~> 2.1", only: :test},
+      {:plug, "~> 1.16", only: :test},
       {:excoveralls, "~> 0.18.2", only: :test},
       {:ex_doc, "~> 0.34.2", only: :docs}
     ]

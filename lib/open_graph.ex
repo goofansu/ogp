@@ -36,8 +36,10 @@ defmodule OpenGraph do
   """
 
   @spec fetch(String.t()) :: {:ok, OpenGraph.t()} | {:error, OpenGraph.Error.t()}
-  def fetch(url) do
-    case Req.get(url) do
+  def fetch(url, req_options \\ []) do
+    options = Keyword.merge(req_options, Application.get_env(:ogp, :req_options, []))
+
+    case Req.get(url, options) do
       {:ok, %Req.Response{status: status} = response} when status in 200..299 ->
         {:ok, parse(response.body)}
 
