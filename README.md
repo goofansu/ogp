@@ -17,7 +17,7 @@ end
 
 ## Usage
 
-I recommend to run [ogp.livemd](https://github.com/goofansu/ogp/blob/main/ogp.livemd) in [Livebook](https://github.com/elixir-nx/livebook) for detail.
+It is recommended to run [ogp.livemd](https://github.com/goofansu/ogp/blob/main/ogp.livemd) in [Livebook](https://github.com/elixir-nx/livebook) for more details.
 
 ### Parse HTML
 
@@ -29,7 +29,7 @@ iex> html = """
 <meta property="og:image" content="https://ia.media-imdb.com/images/rock.jpg" />
 <meta property="og:image" content="https://ia.media-imdb.com/images/rock2.jpg" />
 <meta property="og:audio" content="https://example.com/bond/theme.mp3" />
-<meta property="og:description" 
+<meta property="og:description"
   content="Sean Connery found fame and fortune as the
            suave, sophisticated British agent, James Bond." />
 <meta property="og:determiner" content="the" />
@@ -38,7 +38,7 @@ iex> html = """
 <meta property="og:site_name" content="IMDb" />
 <meta property="og:video" content="https://example.com/bond/trailer.swf" />
 """
-iex> OpenGraph.parse(html)                                                            
+iex> OpenGraph.parse(html)
 %OpenGraph{
   audio: "https://example.com/bond/theme.mp3",
   description: "Sean Connery found fame and fortune as the\n           suave, sophisticated British agent, James Bond.",
@@ -71,20 +71,44 @@ iex> OpenGraph.fetch!("https://github.com")
 }
 ```
 
-Redirect is followed automatically, see the following example:
+Redirects are followed automatically by default.
 
 ```elixir
 iex> OpenGraph.fetch!("https://producthunt.com")
+
+[debug] redirecting to https://www.producthunt.com/
 %OpenGraph{
+  title: " Product Hunt – The best new products in tech. ",
+  type: "article",
+  image: "https://ph-static.imgix.net/ph-logo-1.png",
+  url: "https://www.producthunt.com/",
   audio: nil,
   description: "Product Hunt is a curation of the best new products, every day. Discover the latest mobile apps, websites, and technology products that everyone's talking about.",
   determiner: nil,
-  image: "https://ph-static.imgix.net/ph-logo-1.png",
   locale: "en_US",
   site_name: "Product Hunt",
-  title: " Product Hunt – The best new products in tech. ",
-  type: "article",
-  url: "https://www.producthunt.com/",
   video: nil
 }
 ```
+
+You can control redirects by configuring `req_options`.
+
+- Disable redirects:
+
+```elixir
+config :ogp,
+  req_options: [
+    redirect: false
+  ]
+```
+
+- Set a different `max_redirects` (default is `10`):
+
+```elixir
+config :ogp,
+  req_options: [
+    max_redirects: 3
+  ]
+```
+
+See https://hexdocs.pm/req/Req.html#new/1-options for the full `req` options.
