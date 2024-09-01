@@ -41,28 +41,25 @@ defmodule OpenGraph do
   def fetch(url, req_options \\ []) do
     options = Keyword.merge(req_options, Application.get_env(:ogp, :req_options, []))
 
-    case Req.get(url, options) do
-      {:ok, %Req.Response{status: status} = response} when status in 200..299 ->
-        {:ok, parse(response.body)}
+    url
+    |> Req.get(options)
+    |> handle_response()
+  end
 
-      {:ok, %Req.Response{status: status}} when status in 300..399 ->
-        {:error,
-         %OpenGraph.Error{
-           reason: {:missing_redirect_location, status}
-         }}
+  defp handle_response({:ok, %Req.Response{status: status} = response}) when status in 200..299 do
+    {:ok, parse(response.body)}
+  end
 
-      {:ok, %Req.Response{status: status}} ->
-        {:error,
-         %OpenGraph.Error{
-           reason: {:unexpected_status_code, status}
-         }}
+  defp handle_response({:ok, %Req.Response{status: status}}) when status in 300..399 do
+    {:error, %OpenGraph.Error{reason: {:missing_redirect_location, status}}}
+  end
 
-      {:error, error} ->
-        {:error,
-         %OpenGraph.Error{
-           reason: {:request_error, Exception.message(error)}
-         }}
-    end
+  defp handle_response({:ok, %Req.Response{status: status}}) do
+    {:error, %OpenGraph.Error{reason: {:unexpected_status_code, status}}}
+  end
+
+  defp handle_response({:error, error}) do
+    {:error, %OpenGraph.Error{reason: {:request_error, Exception.message(error)}}}
   end
 
   @doc """
