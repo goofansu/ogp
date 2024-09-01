@@ -23,6 +23,10 @@ defmodule OpenGraph.Error do
     "unexpected response is received. HTTP status code: #{status_code}"
   end
 
+  defp format_reason({:unexpected_format, body}) do
+    "unexpected response format is received. body: #{inspect(body)}"
+  end
+
   defp format_reason({:request_error, reason}) do
     "request error. reason: #{reason}"
   end

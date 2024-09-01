@@ -97,6 +97,17 @@ defmodule OpenGraphTest do
     end
   end
 
+  test "fetch!/1 raises exception for unexpected response format" do
+    data = %{"title" => "The Rock"}
+    Req.Test.stub(MyStub, &Req.Test.json(&1, data))
+
+    assert_raise Error,
+                 "unexpected response format is received. body: #{inspect(data)}",
+                 fn ->
+                   fetch!("https://example.com/")
+                 end
+  end
+
   test "fetch!/1 raises exception for server downtime" do
     Req.Test.stub(MyStub, &Req.Test.transport_error(&1, :econnrefused))
 

@@ -46,8 +46,14 @@ defmodule OpenGraph do
     |> handle_response()
   end
 
-  defp handle_response({:ok, %Req.Response{status: status} = response}) when status in 200..299 do
-    {:ok, parse(response.body)}
+  defp handle_response({:ok, %Req.Response{status: status, body: body}})
+       when status in 200..299 and is_binary(body) do
+    {:ok, parse(body)}
+  end
+
+  defp handle_response({:ok, %Req.Response{status: status, body: body}})
+       when status in 200..299 do
+    {:error, %OpenGraph.Error{reason: {:unexpected_format, body}}}
   end
 
   defp handle_response({:ok, %Req.Response{status: status}}) when status in 300..399 do
