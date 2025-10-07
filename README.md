@@ -11,7 +11,7 @@ The [Open Graph protocol](https://ogp.me/) library in Elixir.
 ```elixir
 def deps do
   [
-    {:ogp, "~> 1.2.0"}
+    {:ogp, "~> 1.1.0"}
   ]
 end
 ```
