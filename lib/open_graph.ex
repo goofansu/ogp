@@ -103,7 +103,7 @@ defmodule OpenGraph do
 
     fields =
       [properties, contents]
-      |> List.zip()
+      |> Enum.zip()
       |> Enum.reduce(%{}, &put_field/2)
 
     struct(__MODULE__, fields)
