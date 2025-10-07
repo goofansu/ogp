@@ -1,9 +1,10 @@
 # ogp
 
-## Install
-
 ```elixir
-Mix.install([{:ogp, "~> 1.0.0"}])
+Mix.install([
+  {:ogp, "~> 1.1"},
+  {:kino, "~> 0.17.0"}
+])
 ```
 
 ## Usage
@@ -50,9 +51,11 @@ OpenGraph.parse(optional_metadata)
 
 #### Input URL
 
-<!-- livebook:{"livebook_object":"cell_input","name":"URL","type":"url","value":"https://nature.com"} -->
+```elixir
+url_input = Kino.Input.url("Enter URL")
+```
 
 ```elixir
-url = IO.gets("URL") |> String.trim("\n")
+url = Kino.Input.read(url_input)
 OpenGraph.fetch!(url)
 ```
